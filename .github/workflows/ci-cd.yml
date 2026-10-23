@@ -1,0 +1,126 @@
+name: ShopSphere CI/CD Production Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # 1. BACKEND TEST & COMPILE JOB (Java 21 / Maven)
+  # ============================================================================
+  test-backend:
+    name: Backend Build & Unit/Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 (Eclipse Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run Backend Tests (All 7 Business Services)
+        run: |
+          set -e
+          SERVICES=("api-gateway" "auth-service" "product-service" "cart-service" "inventory-service" "payment-service" "order-service")
+          for SVC in "${SERVICES[@]}"; do
+            echo "=============================================="
+            echo " Running Tests for: ${SVC}"
+            echo "=============================================="
+            (cd "services/${SVC}" && chmod +x mvnw && ./mvnw test -B)
+          done
+
+      - name: Package Infrastructure Components
+        run: |
+          set -e
+          (cd infrastructure/config-server && chmod +x mvnw && ./mvnw package -DskipTests -B)
+          (cd infrastructure/service-registry && chmod +x mvnw && ./mvnw package -DskipTests -B)
+
+  # ============================================================================
+  # 2. FRONTEND BUILD & TEST JOB (Node 22 / React / Vite)
+  # ============================================================================
+  test-frontend:
+    name: Frontend Build & Bundle Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build Production SPA Bundle
+        working-directory: ./frontend
+        run: npm run build
+
+  # ============================================================================
+  # 3. DOCKER SPECIFICATION VALIDATION JOB
+  # ============================================================================
+  validate-docker:
+    name: Validate Docker & Compose Specifications
+    runs-on: ubuntu-latest
+    needs: [ test-backend, test-frontend ]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Compose Configuration Syntax
+        run: |
+          docker compose config --quiet
+          docker compose -f docker-compose.prod.yml config --quiet
+          echo "✓ All Docker Compose specifications are syntactically valid."
+
+  # ============================================================================
+  # 4. CONTINUOUS DEPLOYMENT JOB (Automated Cloud VM Deployment)
+  # ============================================================================
+  deploy:
+    name: Deploy to Cloud Production Host
+    runs-on: ubuntu-latest
+    needs: [ validate-docker ]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Check if Deployment Secrets Are Configured
+        id: check_secrets
+        run: |
+          if [ -n "${{ secrets.PROD_HOST }}" ] && [ -n "${{ secrets.PROD_SSH_KEY }}" ]; then
+            echo "has_secrets=true" >> $GITHUB_OUTPUT
+            echo "✓ Production deployment secrets detected."
+          else
+            echo "has_secrets=false" >> $GITHUB_OUTPUT
+            echo "! Production deployment secrets (PROD_HOST, PROD_SSH_KEY) not configured."
+            echo "Skipping automated SSH deployment. (Ready for manual or triggered release)"
+          fi
+
+      - name: Deploy via SSH to Cloud Host
+        if: steps.check_secrets.outputs.has_secrets == 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME || 'ubuntu' }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          port: ${{ secrets.PROD_PORT || 22 }}
+          script: |
+            set -e
+            cd /opt/shopsphere
+            chmod +x scripts/*.sh
+            ./scripts/deploy.sh

@@ -1,0 +1,188 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "ShopSphere System Availability & Health",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "UP" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 1 },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        { "expr": "up", "legendFormat": "{{application}}", "refId": "A" }
+      ],
+      "title": "Microservice Health Status",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 101,
+      "title": "HTTP Traffic, Latency & Error Rates",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" } },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 6 },
+      "id": 2,
+      "options": { "tooltip": { "mode": "single" } },
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_count[1m])) by (application)", "legendFormat": "{{application}}", "refId": "A" }
+      ],
+      "title": "Request Throughput by Service (req/s)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s" } },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 6 },
+      "id": 3,
+      "options": { "tooltip": { "mode": "single" } },
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_sum[1m])) by (application) / sum(rate(http_server_requests_seconds_count[1m])) by (application)", "legendFormat": "{{application}} avg latency", "refId": "A" }
+      ],
+      "title": "Average Request Latency (seconds)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percentunit" } },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 6 },
+      "id": 4,
+      "options": { "tooltip": { "mode": "single" } },
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_count{status=~\"4..|5..\"}[1m])) by (status)", "legendFormat": "HTTP {{status}}", "refId": "A" }
+      ],
+      "title": "HTTP Error Rates (4xx & 5xx)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 102,
+      "title": "ShopSphere Business Operations (Orders, Payments & Inventory)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 15 },
+      "id": 5,
+      "options": { "tooltip": { "mode": "single" } },
+      "targets": [
+        { "expr": "orders_created_total", "legendFormat": "Created", "refId": "A" },
+        { "expr": "orders_confirmed_total", "legendFormat": "Confirmed", "refId": "B" },
+        { "expr": "orders_cancelled_total", "legendFormat": "Cancelled", "refId": "C" },
+        { "expr": "orders_pending_total", "legendFormat": "Pending", "refId": "D" }
+      ],
+      "title": "Order Lifecycle Velocity",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 15 },
+      "id": 6,
+      "options": { "tooltip": { "mode": "single" } },
+      "targets": [
+        { "expr": "payments_success_total", "legendFormat": "Payments Success", "refId": "A" },
+        { "expr": "payments_failed_total", "legendFormat": "Payments Failed", "refId": "B" }
+      ],
+      "title": "Payment Transactions",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 15 },
+      "id": 7,
+      "options": { "tooltip": { "mode": "single" } },
+      "targets": [
+        { "expr": "inventory_reservation_success_total", "legendFormat": "Reserved", "refId": "A" },
+        { "expr": "inventory_reservation_confirmed_total", "legendFormat": "Confirmed", "refId": "B" },
+        { "expr": "inventory_reservation_cancelled_total", "legendFormat": "Cancelled", "refId": "C" },
+        { "expr": "inventory_reservation_failed_total", "legendFormat": "Failed (Stock)", "refId": "D" }
+      ],
+      "title": "Inventory Reservations",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "id": 103,
+      "title": "Order Recovery & Resilience Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "id": 8,
+      "options": { "tooltip": { "mode": "single" } },
+      "targets": [
+        { "expr": "orders_recovery_success_total", "legendFormat": "Recovery Succeeded", "refId": "A" },
+        { "expr": "orders_recovery_failed_total", "legendFormat": "Recovery Failed", "refId": "B" },
+        { "expr": "orders_recovery_pending_total", "legendFormat": "Recovery Pending", "refId": "C" }
+      ],
+      "title": "Order Recovery Outcomes",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "bytes" } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "id": 9,
+      "options": { "tooltip": { "mode": "single" } },
+      "targets": [
+        { "expr": "sum(jvm_memory_used_bytes{area=\"heap\"}) by (application)", "legendFormat": "{{application}} heap used", "refId": "A" }
+      ],
+      "title": "JVM Heap Memory Usage",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["shopsphere", "observability", "microservices"],
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s", "10s", "30s", "1m"] },
+  "timezone": "browser",
+  "title": "ShopSphere Microservices Observability Dashboard",
+  "version": 1
+}

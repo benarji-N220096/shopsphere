@@ -1,0 +1,23 @@
+shopsphere:
+  auth:
+    config-message: "Auth Service configuration loaded from Config Server"
+  oauth:
+    google:
+      client-id: ${GOOGLE_CLIENT_ID:your_google_client_id_here}
+      client-secret: ${GOOGLE_CLIENT_SECRET:your_google_client_secret_here}
+
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:shopsphere_auth}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:bunny6281}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:shopsphere_auth}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    user: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:bunny6281}
+    baseline-on-migrate: true

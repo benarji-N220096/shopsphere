@@ -1,0 +1,128 @@
+[
+  {
+    "test": "TEST 1 \u2014 Eureka Service Discovery",
+    "expected": "Status 200 and services registered",
+    "actual": "Status 200, apps: ['API-GATEWAY', 'PAYMENT-SERVICE', 'AUTH-SERVICE', 'CART-SERVICE', 'ORDER-SERVICE', 'INVENTORY-SERVICE', 'PRODUCT-SERVICE']",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 2 \u2014 Config Server",
+    "expected": "Status 200 with centralized properties",
+    "actual": "Status 200, properties loaded",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 3 \u2014 Gateway Health",
+    "expected": "Status 200 UP",
+    "actual": "Status 200, body: {\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 4 \u2014 Authentication Regression",
+    "expected": "JWT issued and valid",
+    "actual": "Token generated successfully",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 5 \u2014 Unauthorized Request",
+    "expected": "HTTP 401 Unauthorized",
+    "actual": "HTTP 401",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 6 \u2014 Authorization Regression",
+    "expected": "HTTP 403 Forbidden for CUSTOMER on ADMIN endpoint",
+    "actual": "HTTP 403",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 7 \u2014 Product Request",
+    "expected": "HTTP 200 with product list",
+    "actual": "HTTP 200, found productId: 1443e15b-5204-49a7-b178-61aade75c422",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 8 \u2014 Inventory Request",
+    "expected": "HTTP 200 with inventory info",
+    "actual": "HTTP 200",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 9 \u2014 Checkout Trace & Full Orchestration",
+    "expected": "Order CONFIRMED with trace correlation",
+    "actual": "HTTP 201, Order ae7ce1ad-4297-43df-b816-ce7f9e5aacab CONFIRMED, TraceId: 63940b4a6e804449, RequestId: checkout-req-02d717b8",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 10 \u2014 Payment Failure Observability",
+    "expected": "Payment fails, order cancelled, cart intact",
+    "actual": "Checkout HTTP 400, Cart retained 1 item(s)",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 11 \u2014 Order Recovery Observability",
+    "expected": "Batch recovery runs and returns summary",
+    "actual": "HTTP 200, result: {'totalFound': 0, 'confirmedCount': 0, 'cancelledCount': 0, 'stillPendingCount': 0, 'failedCount': 0}",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 12 \u2014 Actuator Health Endpoints",
+    "expected": "All 7 services return UP on /actuator/health",
+    "actual": "All 7 services healthy",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 13 \u2014 Prometheus & Custom Business Metrics",
+    "expected": "Prometheus endpoint exposes custom business metrics",
+    "actual": "HTTP 200, Verified metrics: ['orders_confirmed_total', 'order_processing_duration', 'orders_recovery', 'payments_success_total', 'payment_processing_duration']",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 14 \u2014 Grafana Dashboard Verification",
+    "expected": "Valid dashboard JSON with panels",
+    "actual": "Found valid dashboard with 13 panels/rows",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 15 \u2014 Distributed Tracing Backend (Zipkin)",
+    "expected": "Zipkin server responsive and traces queryable",
+    "actual": "HTTP 200, 10 traces recorded in Zipkin",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 16 \u2014 Observability Perimeter Security",
+    "expected": "Sensitive actuator denied, Payment unrouted, recovery blocked",
+    "actual": "/actuator/env: 404, /api/v1/payments: 401, /recover-pending: 401",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 17 \u2014 Internal Authentication Integrity",
+    "expected": "Unauthenticated internal call rejected (401/403)",
+    "actual": "HTTP 401",
+    "result": "PASS",
+    "details": ""
+  },
+  {
+    "test": "TEST 18 \u2014 Phase 3 Recovery Contract Intact",
+    "expected": "Internal recovery responds with business exception (404 for unknown order)",
+    "actual": "HTTP 404",
+    "result": "PASS",
+    "details": ""
+  }
+]

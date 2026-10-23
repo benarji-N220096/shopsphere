@@ -1,0 +1,190 @@
+{
+  "health_checks": {
+    "config-server": {
+      "status": "DOWN"
+    },
+    "discovery-server": {
+      "status": "UP",
+      "details": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    "api-gateway": {
+      "status": "UP",
+      "details": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    "auth-service": {
+      "status": "UP",
+      "details": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    "product-service": {
+      "status": "UP",
+      "details": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    "cart-service": {
+      "status": "UP",
+      "details": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    "order-service": {
+      "status": "UP",
+      "details": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    "inventory-service": {
+      "status": "UP",
+      "details": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    "payment-service": {
+      "status": "UP",
+      "details": {
+        "groups": [
+          "liveness",
+          "readiness"
+        ],
+        "status": "UP"
+      }
+    },
+    "zipkin": {
+      "status": "UP"
+    }
+  },
+  "actuator_prometheus": {
+    "api-gateway": {
+      "status": "PASS",
+      "bytes_scraped": 37057,
+      "has_jvm": true,
+      "has_hikari": false
+    },
+    "auth-service": {
+      "status": "PASS",
+      "bytes_scraped": 33383,
+      "has_jvm": true,
+      "has_hikari": true
+    },
+    "product-service": {
+      "status": "PASS",
+      "bytes_scraped": 39699,
+      "has_jvm": true,
+      "has_hikari": true
+    },
+    "cart-service": {
+      "status": "PASS",
+      "bytes_scraped": 43741,
+      "has_jvm": true,
+      "has_hikari": true
+    },
+    "order-service": {
+      "status": "PASS",
+      "bytes_scraped": 54444,
+      "has_jvm": true,
+      "has_hikari": true
+    },
+    "inventory-service": {
+      "status": "PASS",
+      "bytes_scraped": 39118,
+      "has_jvm": true,
+      "has_hikari": true
+    },
+    "payment-service": {
+      "status": "PASS",
+      "bytes_scraped": 19489,
+      "has_jvm": true,
+      "has_hikari": true
+    }
+  },
+  "business_metrics": {
+    "cart_items_added_total": 4.0,
+    "orders_created_total": 2.0,
+    "orders_confirmed_total": 2.0,
+    "orders_duration_seconds_count": 2.0,
+    "payments_processed_total": 2.0,
+    "payments_duration_seconds_count": 2.0,
+    "inventory_reservations_created_total": 2.0,
+    "inventory_reservations_confirmed_total": 2.0,
+    "cart_cleared_total": 2.0
+  },
+  "resilience_metrics": {
+    "circuitbreaker_instances": 24,
+    "circuitbreaker_state_samples": [
+      "resilience4j_circuitbreaker_state{group=\"none\",name=\"order-cart\",state=\"closed\"} 1.0",
+      "resilience4j_circuitbreaker_state{group=\"none\",name=\"order-cart\",state=\"disabled\"} 0.0",
+      "resilience4j_circuitbreaker_state{group=\"none\",name=\"order-cart\",state=\"forced_open\"} 0.0",
+      "resilience4j_circuitbreaker_state{group=\"none\",name=\"order-cart\",state=\"half_open\"} 0.0",
+      "resilience4j_circuitbreaker_state{group=\"none\",name=\"order-cart\",state=\"metrics_only\"} 0.0"
+    ],
+    "has_retry_metrics": false
+  },
+  "distributed_tracing": {
+    "gateway_correlation_headers": {
+      "X-Trace-Id": "668bbd22441b46c4",
+      "X-Request-Id": "8379f1cd-7ccd-4ac9-ae4e-83d63f58adac"
+    },
+    "zipkin_traces_found": 10,
+    "services_in_traces": [
+      "payment-service",
+      "inventory-service",
+      "order-service",
+      "cart-service",
+      "product-service"
+    ],
+    "status": "PASS"
+  },
+  "recovery_metrics": {
+    "orders_recovery_cycles_total": 16.0,
+    "orders_recovery_duration_seconds_count": 0.0,
+    "status": "PASS"
+  },
+  "security_verification": {
+    "gateway_blocks_or_strips_internal_secret": true,
+    "gateway_blocks_internal_inventory": true
+  },
+  "leak_audit": {
+    "status": "CLEAN"
+  },
+  "failure_injection": {
+    "status": "PASS",
+    "http_status": 400,
+    "orders_cancelled_total": 1.0,
+    "payments_failed_total": 1.0,
+    "inventory_reservation_cancelled_total": 1.0
+  }
+}
